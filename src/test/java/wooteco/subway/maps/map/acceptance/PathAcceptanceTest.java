@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import wooteco.security.core.TokenResponse;
 import wooteco.subway.common.acceptance.AcceptanceTest;
 import wooteco.subway.maps.line.acceptance.step.LineAcceptanceStep;
 import wooteco.subway.maps.line.dto.LineResponse;
@@ -14,9 +15,16 @@ import wooteco.subway.maps.station.dto.StationResponse;
 
 import static wooteco.subway.maps.line.acceptance.step.LineStationAcceptanceStep.지하철_노선에_지하철역_등록되어_있음;
 import static wooteco.subway.maps.map.acceptance.step.PathAcceptanceStep.*;
+import static wooteco.subway.members.member.acceptance.step.MemberAcceptanceStep.로그인_되어_있음;
+import static wooteco.subway.members.member.acceptance.step.MemberAcceptanceStep.회원_등록되어_있음;
 
 @DisplayName("지하철 경로 조회")
 public class PathAcceptanceTest extends AcceptanceTest {
+    public static final String EMAIL = "email@email.com";
+    public static final String PASSWORD = "password";
+    public static final int YOUTH_AGE = 13;
+    public static final int CHILD_AGE = 12;
+
     private Long 교대역;
     private Long 강남역;
     private Long 양재역;
@@ -24,6 +32,9 @@ public class PathAcceptanceTest extends AcceptanceTest {
     private Long 이호선;
     private Long 신분당선;
     private Long 삼호선;
+
+    private TokenResponse loginResponse;
+
 
     /**
      * 교대역    --- *2호선* ---   강남역
@@ -55,6 +66,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철역_등록되어_있음(삼호선, null, 교대역, 0, 0);
         지하철_노선에_지하철역_등록되어_있음(삼호선, 교대역, 남부터미널역, 1, 2);
         지하철_노선에_지하철역_등록되어_있음(삼호선, 남부터미널역, 양재역, 2, 2);
+
+
     }
 
     @DisplayName("두 역의 최단 거리 경로를 조회한다.")
@@ -89,6 +102,31 @@ public class PathAcceptanceTest extends AcceptanceTest {
         경로의_총_요금을_응답함(response, 1250);
     }
 
+    @DisplayName("청소년 회원에게 기본 요금에서 할인하여 720원을 부과한다")
+    @Test
+    void findFareForYouth() {
+        회원_등록되어_있음(EMAIL, PASSWORD, YOUTH_AGE);
+        loginResponse = 로그인_되어_있음(EMAIL, PASSWORD);
+
+        //when
+        ExtractableResponse<Response> response = 거리_경로_조회_요청_청소년(loginResponse,"DURATION", 1L, 3L);
+        //then
+        적절한_경로를_응답(response, Lists.newArrayList(교대역, 강남역, 양재역));
+        경로의_총_요금을_응답함(response, 720);
+    }
+
+    @DisplayName("청소년 회원에게 기본 요금에서 할인하여 720원을 부과한다")
+    @Test
+    void findFareForChild() {
+        회원_등록되어_있음(EMAIL, PASSWORD, CHILD_AGE);
+        loginResponse = 로그인_되어_있음(EMAIL, PASSWORD);
+
+        //when
+        ExtractableResponse<Response> response = 거리_경로_조회_요청_청소년(loginResponse,"DURATION", 1L, 3L);
+        //then
+        적절한_경로를_응답(response, Lists.newArrayList(교대역, 강남역, 양재역));
+        경로의_총_요금을_응답함(response, 450);
+    }
 
     private Long 지하철_노선_등록되어_있음(String name, String color) {
         ExtractableResponse<Response> createLineResponse1 = LineAcceptanceStep.지하철_노선_등록되어_있음(name, color);
