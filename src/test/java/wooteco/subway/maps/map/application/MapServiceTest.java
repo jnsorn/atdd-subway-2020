@@ -39,6 +39,7 @@ public class MapServiceTest {
 
     private Map<Long, Station> stations;
     private List<Line> lines;
+    private Line lineWithFare;
 
     private SubwayPath subwayPath;
     private SubwayPath subwayPathWith2Distance;
@@ -59,10 +60,10 @@ public class MapServiceTest {
         line1.addLineStation(new LineStation(1L, null, 0, 0));
         line1.addLineStation(lineStation2);
 
-        Line line2 = TestObjectUtils.createLine(2L, "신분당선", "RED");
-        line2.addLineStation(new LineStation(2L, null, 0, 0));
+        lineWithFare = TestObjectUtils.createLineWithExtraFare(2L, "신분당선", "RED", 500);
+        lineWithFare.addLineStation(new LineStation(2L, null, 0, 0));
         LineStation lineStation3 = new LineStation(3L, 2L, 0, 0);
-        line2.addLineStation(lineStation3);
+        lineWithFare.addLineStation(lineStation3);
 
         Line line3 = TestObjectUtils.createLine(3L, "3호선", "ORANGE");
         line3.addLineStation(new LineStation(1L, null, 0, 0));
@@ -71,7 +72,7 @@ public class MapServiceTest {
         line3.addLineStation(lineStation6);
         line3.addLineStation(lineStation7);
 
-        lines = Lists.newArrayList(line1, line2, line3);
+        lines = Lists.newArrayList(line1, lineWithFare, line3);
 
         List<LineStationEdge> lineStations = Lists.newArrayList(
                 new LineStationEdge(lineStation6, line3.getId()),
@@ -85,7 +86,7 @@ public class MapServiceTest {
         subwayPathWith60Distance = new SubwayPath(Lists.newArrayList(
                 new LineStationEdge(lineStation7, line3.getId())));
         subwayPathWithExtraFareLine = new SubwayPath(Lists.newArrayList(
-                new LineStationEdge(lineStation3, line2.getId())));
+                new LineStationEdge(lineStation3, lineWithFare.getId())));
 
         mapService = new MapService(lineService, stationService, pathService);
     }
@@ -158,6 +159,7 @@ public class MapServiceTest {
     @Test
     void showFareByLine() {
         when(lineService.findLines()).thenReturn(lines);
+        when(lineService.findLineById(any())).thenReturn(lineWithFare);
         when(pathService.findPath(anyList(), anyLong(), anyLong(), any())).thenReturn(subwayPathWithExtraFareLine);
         when(stationService.findStationsByIds(anyList())).thenReturn(stations);
         int expected = 1750;

@@ -18,6 +18,8 @@ import wooteco.subway.maps.station.dto.StationResponse;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -90,7 +92,11 @@ public class MapService {
     }
 
     private int calculateFareByLine(List<LineStationEdge> lineStationEdges) {
-        return 0;
-        //List<Long> lines = lineStationEdges.stream().map(LineStationEdge::getLineId).collect(Collectors.toList());
+        Set<Long> lineIds = lineStationEdges.stream().map(LineStationEdge::getLineId).collect(Collectors.toSet());
+        List<Line> lines = lineIds.stream().map(v -> lineService.findLineById(v)).collect(Collectors.toList());
+        return lines.stream()
+                .mapToInt(Line::getExtraFare)
+                .max()
+                .orElseThrow(NoSuchElementException::new);
     }
 }
