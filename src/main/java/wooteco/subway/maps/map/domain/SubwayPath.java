@@ -32,25 +32,4 @@ public class SubwayPath {
     public int calculateDistance() {
         return lineStationEdges.stream().mapToInt(it -> it.getLineStation().getDistance()).sum();
     }
-
-    public int calculateFare() {
-        int distance = calculateDistance();
-        int fare = 1250;
-
-        if (distance > 10) {
-            fare += calculateOverFare(distance - 10);
-        }
-        return fare;
-    }
-
-    private int calculateOverFare(int distance) {
-        if(distance > 40){
-            return 800 + calculateOverFareWhenOver50(distance-40);
-        }
-        return (int) ((Math.ceil((distance - 1) / 5) + 1) * 100);
-    }
-
-    private int calculateOverFareWhenOver50(int distance) {
-        return (int) ((Math.ceil((distance - 1) / 8) + 1) * 100);
-    }
 }

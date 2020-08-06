@@ -33,6 +33,6 @@ public class PathResponse {
     }
 
     public int getFare() {
-        return 1250;
+        return fare;
     }
 }
