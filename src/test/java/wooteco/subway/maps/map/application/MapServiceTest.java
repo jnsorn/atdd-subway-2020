@@ -169,4 +169,29 @@ public class MapServiceTest {
         assertThat(response.getFare()).isEqualTo(expected);
     }
 
+    @DisplayName("기본 요금에서 청소년 할인을 받으면 요금은 720원이다")
+    @Test
+    void showFareByYouth() {
+        when(lineService.findLines()).thenReturn(lines);
+        when(pathService.findPath(anyList(), anyLong(), anyLong(), any())).thenReturn(subwayPath);
+        when(stationService.findStationsByIds(anyList())).thenReturn(stations);
+        int expected = 720;
+
+        PathResponse response = mapService.findPath(1L, 2L, PathType.DISTANCE);
+
+        assertThat(response.getFare()).isEqualTo(expected);
+    }
+
+    @DisplayName("기본 요금에서 어린이 할인을 받으면 요금은 450원이다")
+    @Test
+    void showFareByChild() {
+        when(lineService.findLines()).thenReturn(lines);
+        when(pathService.findPath(anyList(), anyLong(), anyLong(), any())).thenReturn(subwayPath);
+        when(stationService.findStationsByIds(anyList())).thenReturn(stations);
+        int expected = 450;
+
+        PathResponse response = mapService.findPath(1L, 2L, PathType.DISTANCE);
+
+        assertThat(response.getFare()).isEqualTo(expected);
+    }
 }
