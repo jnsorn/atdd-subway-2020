@@ -1,6 +1,7 @@
 package wooteco.subway.maps.map.application;
 
 import com.google.common.collect.Lists;
+import org.junit.jupiter.api.DisplayName;
 import wooteco.subway.maps.line.application.LineService;
 import wooteco.subway.maps.line.domain.Line;
 import wooteco.subway.maps.line.domain.LineStation;
@@ -87,6 +88,7 @@ public class MapServiceTest {
         assertThat(pathResponse.getStations()).isNotEmpty();
         assertThat(pathResponse.getDuration()).isNotZero();
         assertThat(pathResponse.getDistance()).isNotZero();
+        assertThat(pathResponse.getFare()).isNotZero();
     }
 
     @Test
