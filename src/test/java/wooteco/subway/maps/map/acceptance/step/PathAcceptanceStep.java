@@ -33,10 +33,15 @@ public class PathAcceptanceStep {
         assertThat(stationIds).containsExactlyElementsOf(expectedPath);
     }
 
-    public static void 총_거리와_소요_시간과_요금을_함께_응답함(ExtractableResponse<Response> response, int totalDistance, int totalDuration, int totalFare) {
+    public static void 총_거리와_소요_시간을_함께_응답함(ExtractableResponse<Response> response, int totalDistance, int totalDuration) {
         PathResponse pathResponse = response.as(PathResponse.class);
         assertThat(pathResponse.getDistance()).isEqualTo(totalDistance);
         assertThat(pathResponse.getDuration()).isEqualTo(totalDuration);
-        assertThat(pathResponse.getFare()).isEqualTo(totalFare);
+    }
+
+
+    public static void 경로의_총_요금을_응답함(ExtractableResponse<Response> response, int fare) {
+        PathResponse pathResponse = response.as(PathResponse.class);
+        assertThat(pathResponse.getFare()).isEqualTo(fare);
     }
 }
