@@ -44,6 +44,7 @@ public class MapServiceTest {
     private SubwayPath subwayPathWith2Distance;
     private SubwayPath subwayPathWith35Distance;
     private SubwayPath subwayPathWith60Distance;
+    private SubwayPath subwayPathWithExtraFareLine;
 
     @BeforeEach
     void setUp() {
@@ -60,12 +61,12 @@ public class MapServiceTest {
 
         Line line2 = TestObjectUtils.createLine(2L, "신분당선", "RED");
         line2.addLineStation(new LineStation(2L, null, 0, 0));
-        LineStation lineStation3 = new LineStation(3L, 2L, 35, 0);
+        LineStation lineStation3 = new LineStation(3L, 2L, 0, 0);
         line2.addLineStation(lineStation3);
 
         Line line3 = TestObjectUtils.createLine(3L, "3호선", "ORANGE");
         line3.addLineStation(new LineStation(1L, null, 0, 0));
-        LineStation lineStation6 = new LineStation(4L, 1L, 1, 2);
+        LineStation lineStation6 = new LineStation(4L, 1L, 35, 2);
         LineStation lineStation7 = new LineStation(3L, 4L, 60, 0);
         line3.addLineStation(lineStation6);
         line3.addLineStation(lineStation7);
@@ -80,9 +81,12 @@ public class MapServiceTest {
         subwayPathWith2Distance = new SubwayPath(Lists.newArrayList(
                 new LineStationEdge(lineStation2, line1.getId())));
         subwayPathWith35Distance = new SubwayPath(Lists.newArrayList(
-                new LineStationEdge(lineStation3, line2.getId())));
+                new LineStationEdge(lineStation6, line3.getId())));
         subwayPathWith60Distance = new SubwayPath(Lists.newArrayList(
                 new LineStationEdge(lineStation7, line3.getId())));
+        subwayPathWithExtraFareLine = new SubwayPath(Lists.newArrayList(
+                new LineStationEdge(lineStation3, line2.getId())));
+
         mapService = new MapService(lineService, stationService, pathService);
     }
 
@@ -132,7 +136,7 @@ public class MapServiceTest {
         when(stationService.findStationsByIds(anyList())).thenReturn(stations);
         int expected = 1750;
 
-        PathResponse response = mapService.findPath(2L, 3L, PathType.DURATION);
+        PathResponse response = mapService.findPath(1L, 4L, PathType.DURATION);
 
         assertThat(response.getFare()).isEqualTo(expected);
     }
@@ -150,15 +154,17 @@ public class MapServiceTest {
         assertThat(response.getFare()).isEqualTo(expected);
     }
 
-//    @DisplayName("노선의 추가 요금이 500원이 할인 혜택이 없으며 총 이동 거리가 10km 이하 때 일 때, 요금은 1750원이다")
-//    @Test
-//    void showFareByLine() {
-//        when(lineService.findLines()).thenReturn(lines);
-//        when(pathService.findPath(anyList(), anyLong(), anyLong(), any())).thenReturn(subwayPath);
-//        when(stationService.findStationsByIds(anyList())).thenReturn(stations);
-//        int expected = 1750;
-//
-//        //assertThat(actual).isEqualTo(expected);
-//    }
+    @DisplayName("노선의 추가 요금이 500원이 할인 혜택이 없으며 총 이동 거리가 10km 이하 때 일 때, 요금은 1750원이다")
+    @Test
+    void showFareByLine() {
+        when(lineService.findLines()).thenReturn(lines);
+        when(pathService.findPath(anyList(), anyLong(), anyLong(), any())).thenReturn(subwayPathWithExtraFareLine);
+        when(stationService.findStationsByIds(anyList())).thenReturn(stations);
+        int expected = 1750;
+
+        PathResponse response = mapService.findPath(3L, 2L, PathType.DISTANCE);
+
+        assertThat(response.getFare()).isEqualTo(expected);
+    }
 
 }
