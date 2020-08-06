@@ -1,5 +1,6 @@
 package wooteco.subway.maps.station.application;
 
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.maps.station.domain.Station;
 import wooteco.subway.maps.station.domain.StationRepository;
 import wooteco.subway.maps.station.dto.StationCreateRequest;
@@ -12,6 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class StationService {
     private StationRepository stationRepository;
 

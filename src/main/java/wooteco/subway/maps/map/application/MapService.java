@@ -1,5 +1,6 @@
 package wooteco.subway.maps.map.application;
 
+import org.springframework.transaction.annotation.Transactional;
 import wooteco.subway.maps.line.application.LineService;
 import wooteco.subway.maps.line.domain.Line;
 import wooteco.subway.maps.line.dto.LineResponse;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class MapService {
     private LineService lineService;
     private StationService stationService;

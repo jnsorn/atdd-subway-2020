@@ -30,12 +30,10 @@ public class LineService {
         return lineRepository.save(request.toLine());
     }
 
-    @Transactional(readOnly = true)
     public List<Line> findLines() {
         return lineRepository.findAll();
     }
 
-    @Transactional(readOnly = true)
     public Line findLineById(Long id) {
         return lineRepository.findById(id).orElseThrow(RuntimeException::new);
     }
@@ -49,7 +47,6 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    @Transactional(readOnly = true)
     public List<LineResponse> findLineResponses() {
         List<Line> lines = findLines();
 
@@ -58,7 +55,6 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
     public LineResponse findLineResponsesById(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(RuntimeException::new);
         List<Long> stationIds = line.getStationInOrder().stream()
